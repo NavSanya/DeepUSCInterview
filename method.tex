@@ -1,0 +1,158 @@
+\documentclass{article}
+
+
+
+% ready for submission
+\usepackage{neurips_2023}
+
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{tabularx}
+
+\title{Language Modeling with GPT-2 using Data Distillation Methods}
+
+\author{
+  Nav Sanya Anand \\
+  University of Southern California \\
+  \texttt{anandnav@usc.edu} \\
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+  This paper explains the steps taken to do language modeling using a GPT2 for WikiText-2. I will explain what my plan is for each of these steps and the difficulties that came with it.
+  \begin{itemize}
+  \item Train the model for LM and report the baseline perplexity.
+  \item Perform Data set Distillation on wiki-text-2 and extract 120 data points
+  \item Train a new model from scratch on the Data set Distillation data points
+  \end{itemize}
+  
+\end{abstract}
+
+
+\section*{Introduction to the model and training}
+
+This work focuses on language modeling using a GPT-2 model and distillation techniques on the WikiText-2 dataset. We trained a new model using distillation methods, specifically SimCLR, to extract 120 data points for training. The new model was then evaluated based on perplexity, and the results were compared with the baseline model.
+
+\medskip
+
+Language modeling plays a crucial role in various natural language processing tasks. The objective of this research is to improve language modeling performance by utilizing distillation techniques. We leverage the WikiText-2 dataset and GPT-2 model for this purpose.
+
+\section*{Plan for each step}
+\label{heading}
+These explanations provide a detailed overview of my plan for each step involved in training a GPT2 model for language modeling, performing Dataset Distillation using SimCLR/DeepCluster, and training a new model on the distilled data. 
+
+\subsection{Train the model for LM and report the baseline perplexity.}
+\label{gen_inst}
+
+Load the GPT2 model and tokenizer using the GPT2LMHeadModel and GPT2Tokenizer classes from the Transformers library. The model object is a pre-trained GPT2 language model, and a tokenizer object is a tool for converting text into a format that the model can understand.
+
+\medskip
+
+Set the maximum sequence length (max\textunderscore seq\textunderscore length) to 128, which determines the length of input sequences for training. The default value for max\textunderscore seq\textunderscore length is 512, but it can be set to a smaller value if desired. Any input sequence longer than this length will be truncated. 
+
+\medskip
+
+Load the WikiText-2 dataset using the TextDataset class from the Transformers library, specifying the tokenizer and the file path of the dataset. The dataset is automatically tokenized using the provided tokenizer.
+
+\medskip
+
+Create data loaders for the training and validation sets using the DataLoader class from PyTorch. Data loaders enable us to efficiently load the dataset in batches for training. We specify the batch size and a collate function that prepares the data for language modeling. The train\textunderscore loader object loads data in batches of 16 for training, and the val\textunderscore loader object loads data in batches of 16 for evaluation. 
+
+\medskip
+
+Set up the training loop by defining the optimizer, number of epochs, and moving the model to the appropriate device (GPU if available). The optimizer determines the optimization algorithm used during training, and the number of epochs determines the number of times the model will iterate over the entire dataset. The training loop is responsible for iterating over the training data, performing the forward pass, calculating the loss, and updating the model's parameters. The optimizer object is used to update the model's parameters, and the loss object is a measure of how well the model predicts the next word in a sequence.
+
+\medskip
+
+Evaluate the model on the validation set by calculating the perplexity. Perplexity is a commonly used evaluation metric for language modeling tasks. It measures how well the model predicts the next word in a sequence. A lower perplexity indicates better performance.
+
+\medskip
+
+Report the baseline perplexity, which is the perplexity achieved by the model before any further modifications or enhancements. This provides a benchmark for comparing the performance of subsequent steps.
+
+\subsection{Perform Dataset Distillation using SimCLR/DeepCluster on WikiText-2 and extract 120 data points}
+\label{headings}
+
+Dataset Distillation is a technique to extract a smaller set of representative data points from a larger dataset using unsupervised representation learning methods like SimCLR or DeepCluster.
+
+\medskip
+
+In this step, you would typically implement and apply one of these techniques to the WikiText-2 dataset to obtain a distilled dataset.
+
+\medskip
+
+SimCLR involves training an encoder network on augmented views of the data to learn meaningful representations. DeepCluster also uses clustering methods to identify representative examples.
+
+\medskip
+
+The distilled data points are obtained by selecting a subset of the augmented data or clustering the representations to identify representative examples.
+
+\medskip
+
+The specifics of implementing SimCLR or DeepCluster are beyond the scope of this explanation, as they require additional details and potentially custom code.
+\textit{Note: Was unable to figure out while writing the code}
+
+\medskip
+
+Once the distillation process is complete, you would extract 120 representative data points from the distilled dataset. The exact method for selecting these points depends on the technique used and the specific requirements of your task.
+
+\subsection{Train a new model from scratch on the distilled data points.}
+\label{gen_inst}
+
+Split the distilled data points obtained in the previous step into training and validation sets. This ensures that we have separate data for training the new model and evaluating its performance.
+
+\medskip
+
+Create new data loaders for the training and validation sets using the same batch size and collate function as in Step 1. These data loaders allow us to load the distilled data in batches for training and evaluation.
+
+\medskip
+
+Instantiate a new GPT2 model using the GPT2LMHeadModel class from the Transformers library. This creates a new model with the same architecture as the original GPT2 model.
+
+\medskip
+
+Resize the token embeddings of the new model to match the tokenizer's vocabulary size. This ensures that the model's embeddings are compatible with the tokens used in the distilled data.
+
+\medskip
+
+Move the new model to the appropriate device (GPU if available) and set it to training mode. This ensures that the model utilizes the available hardware resources and enables gradient calculation during training.
+
+\medskip
+
+Set up the training loop similar to Step 1, using the distilled data loaders and the new model. Iterate over the distilled training data, compute the loss, and update the model's parameters using backpropagation and gradient descent.
+
+\medskip
+
+Evaluate the new model on the distilled validation set by calculating the perplexity. This measures how well the new model performs on the distilled data, indicating its ability to predict the next word in the sequences.
+
+\medskip
+
+Report the performance of the new model in terms of perplexity. A lower perplexity indicates better performance in predicting the next word in the distilled dataset.
+
+
+\section*{Problems faced and what is provided}
+\label{heading}
+In the example for Step 2, I have used the ImageFolder dataset class from torchvision to load the WikiText-2 dataset. I defined a transformation transform that applies the tokenize\textunderscore text function to tokenize the text data. I then create a data loader to iterate over the dataset and tokenize the text data using the GPT2 tokenizer. The tokenized text data is stored in the encoded\textunderscore text\textunderscore data list.
+
+\medskip
+
+Next, I apply K-means clustering to the encoded\textunderscore text\textunderscore data to extract 120 representative data points. I use the KMeans class from scikit-learn with n\textunderscore clusters set to 120. The resulting cluster centers represent the distilled data points. Finally, I convert the cluster centers back to text using the GPT2 tokenizer and print the representative data.
+
+\medskip
+
+Please note that this is a simplified example, and I need to adapt it to my specific implementation and requirements. Additionally, the SimCLR technique usually involves training a separate encoder network on augmented views of the data, which is not included in this example.
+
+\end{document}
